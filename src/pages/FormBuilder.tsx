@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import { DndProvider } from '@hello-pangea/dnd';
+import { HTML5Backend } from '@hello-pangea/dnd';
 import { 
   FormBuilderHeader, 
   FormBuilderSidebar, 

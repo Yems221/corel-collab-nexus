@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { PlusCircle, Type, Hash, Calendar, Clock, Mail, Phone, CheckSquare, RadioButton, FileText, MapPin, Link as LinkIcon, AlignJustify, SplitSquareVertical } from 'lucide-react';
+import { PlusCircle, Type, Hash, Calendar, Clock, Mail, Phone, CheckSquare, Circle, FileText, MapPin, Link as LinkIcon, AlignJustify, SplitSquareVertical } from 'lucide-react';
 
 interface FormBuilderSidebarProps {
   onAddField: (fieldType: string) => void;
@@ -28,7 +27,7 @@ const FormBuilderSidebar: React.FC<FormBuilderSidebarProps> = ({
   const advancedFields = [
     { type: 'select', label: 'Liste déroulante', icon: SplitSquareVertical },
     { type: 'checkbox', label: 'Cases à cocher', icon: CheckSquare },
-    { type: 'radio', label: 'Boutons radio', icon: RadioButton },
+    { type: 'radio', label: 'Boutons radio', icon: Circle },
     { type: 'file', label: 'Fichier', icon: FileText },
     { type: 'address', label: 'Adresse', icon: MapPin },
     { type: 'url', label: 'URL', icon: LinkIcon },
