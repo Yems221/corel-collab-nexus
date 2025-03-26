@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { FormTemplate, FormSection, FormField } from '../../types/form-builder';
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -8,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { Droppable, Draggable } from '@hello-pangea/dnd';
 import { Grip, Settings, Trash2, Copy, ChevronUp, ChevronDown, PlusCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -44,24 +43,6 @@ const FormBuilderCanvas: React.FC<FormBuilderCanvasProps> = ({
   
   const selectedSection = formTemplate.sections.find(s => s.id === selectedSectionId);
   const selectedField = selectedSection?.fields.find(f => f.id === selectedFieldId);
-
-  const handleDragEnd = (result: any) => {
-    const { source, destination, type } = result;
-    
-    // Dropped outside the list
-    if (!destination) {
-      return;
-    }
-    
-    // If the item was dropped in a different position
-    if (source.droppableId !== destination.droppableId || source.index !== destination.index) {
-      if (type === 'section') {
-        onReorderSections(source.index, destination.index);
-      } else if (type === 'field') {
-        onReorderFields(source.droppableId, source.index, destination.index);
-      }
-    }
-  };
 
   const renderFieldPreview = (field: FormField) => {
     switch (field.type) {
@@ -153,188 +134,186 @@ const FormBuilderCanvas: React.FC<FormBuilderCanvasProps> = ({
         </div>
         
         <TabsContent value="form" className="flex-1 overflow-y-auto p-4">
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <Droppable droppableId="sections" type="section">
-              {(provided) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  className="space-y-6"
-                >
-                  {formTemplate.sections.length === 0 ? (
-                    <div className="text-center p-8 border-2 border-dashed rounded-md">
-                      <p className="text-muted-foreground mb-4">Aucune section dans ce formulaire</p>
-                      <Button onClick={() => onReorderSections(0, 0)}>
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Ajouter une section
-                      </Button>
-                    </div>
-                  ) : (
-                    formTemplate.sections.map((section, sectionIndex) => (
-                      <Draggable 
-                        key={section.id} 
-                        draggableId={section.id} 
-                        index={sectionIndex}
-                      >
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            className={`border rounded-md ${selectedSectionId === section.id ? 'ring-2 ring-primary' : ''}`}
-                            onClick={() => onSelectSection(section.id)}
-                          >
-                            <div className="bg-muted p-2 rounded-t-md flex items-center justify-between">
-                              <div className="flex items-center">
-                                <div {...provided.dragHandleProps} className="cursor-grab p-1 mr-2">
-                                  <Grip className="h-4 w-4 text-muted-foreground" />
-                                </div>
-                                <span className="font-medium">{section.title}</span>
+          <Droppable droppableId="sections" type="section">
+            {(provided) => (
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className="space-y-6"
+              >
+                {formTemplate.sections.length === 0 ? (
+                  <div className="text-center p-8 border-2 border-dashed rounded-md">
+                    <p className="text-muted-foreground mb-4">Aucune section dans ce formulaire</p>
+                    <Button onClick={() => onReorderSections(0, 0)}>
+                      <PlusCircle className="mr-2 h-4 w-4" />
+                      Ajouter une section
+                    </Button>
+                  </div>
+                ) : (
+                  formTemplate.sections.map((section, sectionIndex) => (
+                    <Draggable 
+                      key={section.id} 
+                      draggableId={section.id} 
+                      index={sectionIndex}
+                    >
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          className={`border rounded-md ${selectedSectionId === section.id ? 'ring-2 ring-primary' : ''}`}
+                          onClick={() => onSelectSection(section.id)}
+                        >
+                          <div className="bg-muted p-2 rounded-t-md flex items-center justify-between">
+                            <div className="flex items-center">
+                              <div {...provided.dragHandleProps} className="cursor-grab p-1 mr-2">
+                                <Grip className="h-4 w-4 text-muted-foreground" />
                               </div>
-                              
-                              <div className="flex items-center space-x-1">
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    onSelectSection(section.id);
-                                    setActiveTab('section');
-                                  }}
-                                >
-                                  <Settings className="h-4 w-4" />
-                                </Button>
-                                
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (formTemplate.sections.length > 1) {
-                                      onRemoveSection(section.id);
-                                    } else {
-                                      toast({
-                                        title: "Impossible de supprimer",
-                                        description: "Le formulaire doit contenir au moins une section",
-                                        variant: "destructive"
-                                      });
-                                    }
-                                  }}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
+                              <span className="font-medium">{section.title}</span>
                             </div>
                             
-                            <div className="p-4">
-                              {section.description && (
-                                <p className="text-sm text-muted-foreground mb-4">{section.description}</p>
-                              )}
+                            <div className="flex items-center space-x-1">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onSelectSection(section.id);
+                                  setActiveTab('section');
+                                }}
+                              >
+                                <Settings className="h-4 w-4" />
+                              </Button>
                               
-                              <Droppable droppableId={section.id} type="field">
-                                {(provided) => (
-                                  <div
-                                    ref={provided.innerRef}
-                                    {...provided.droppableProps}
-                                    className="space-y-4"
-                                  >
-                                    {section.fields.length === 0 ? (
-                                      <div className="text-center p-6 border border-dashed rounded-md">
-                                        <p className="text-muted-foreground">
-                                          Ajoutez des champs depuis le panneau de gauche
-                                        </p>
-                                      </div>
-                                    ) : (
-                                      section.fields.map((field, fieldIndex) => (
-                                        <Draggable 
-                                          key={field.id} 
-                                          draggableId={field.id} 
-                                          index={fieldIndex}
-                                        >
-                                          {(provided) => (
-                                            <div
-                                              ref={provided.innerRef}
-                                              {...provided.draggableProps}
-                                              className={`border p-3 rounded-md ${selectedFieldId === field.id ? 'ring-2 ring-primary bg-accent/10' : 'hover:bg-accent/5'}`}
-                                              onClick={(e) => {
-                                                e.stopPropagation();
-                                                onSelectField(field.id);
-                                              }}
-                                            >
-                                              <div className="flex justify-between items-start mb-2">
-                                                <div className="flex items-center">
-                                                  <div 
-                                                    {...provided.dragHandleProps} 
-                                                    className="cursor-grab p-1 mr-2"
-                                                  >
-                                                    <Grip className="h-4 w-4 text-muted-foreground" />
-                                                  </div>
-                                                  <div>
-                                                    <div className="flex items-center">
-                                                      <label className="text-sm font-medium">
-                                                        {field.label}
-                                                        {field.required && <span className="text-destructive ml-1">*</span>}
-                                                      </label>
-                                                    </div>
-                                                    <span className="text-xs text-muted-foreground">
-                                                      {field.type}
-                                                    </span>
-                                                  </div>
-                                                </div>
-                                                
-                                                <div className="flex items-center space-x-1">
-                                                  <Button 
-                                                    variant="ghost" 
-                                                    size="sm"
-                                                    onClick={(e) => {
-                                                      e.stopPropagation();
-                                                      onSelectField(field.id);
-                                                      setActiveTab('field');
-                                                    }}
-                                                  >
-                                                    <Settings className="h-4 w-4" />
-                                                  </Button>
-                                                  <Button 
-                                                    variant="ghost" 
-                                                    size="sm"
-                                                    onClick={(e) => {
-                                                      e.stopPropagation();
-                                                      onRemoveField(section.id, field.id);
-                                                    }}
-                                                  >
-                                                    <Trash2 className="h-4 w-4" />
-                                                  </Button>
-                                                </div>
-                                              </div>
-                                              
-                                              <div className="mt-2">
-                                                {renderFieldPreview(field)}
-                                              </div>
-                                              
-                                              {field.helpText && (
-                                                <p className="text-xs text-muted-foreground mt-1">
-                                                  {field.helpText}
-                                                </p>
-                                              )}
-                                            </div>
-                                          )}
-                                        </Draggable>
-                                      ))
-                                    )}
-                                    {provided.placeholder}
-                                  </div>
-                                )}
-                              </Droppable>
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (formTemplate.sections.length > 1) {
+                                    onRemoveSection(section.id);
+                                  } else {
+                                    toast({
+                                      title: "Impossible de supprimer",
+                                      description: "Le formulaire doit contenir au moins une section",
+                                      variant: "destructive"
+                                    });
+                                  }
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
                             </div>
                           </div>
-                        )}
-                      </Draggable>
-                    ))
-                  )}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
+                          
+                          <div className="p-4">
+                            {section.description && (
+                              <p className="text-sm text-muted-foreground mb-4">{section.description}</p>
+                            )}
+                            
+                            <Droppable droppableId={section.id} type="field">
+                              {(provided) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.droppableProps}
+                                  className="space-y-4"
+                                >
+                                  {section.fields.length === 0 ? (
+                                    <div className="text-center p-6 border border-dashed rounded-md">
+                                      <p className="text-muted-foreground">
+                                        Ajoutez des champs depuis le panneau de gauche
+                                      </p>
+                                    </div>
+                                  ) : (
+                                    section.fields.map((field, fieldIndex) => (
+                                      <Draggable 
+                                        key={field.id} 
+                                        draggableId={field.id} 
+                                        index={fieldIndex}
+                                      >
+                                        {(provided) => (
+                                          <div
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            className={`border p-3 rounded-md ${selectedFieldId === field.id ? 'ring-2 ring-primary bg-accent/10' : 'hover:bg-accent/5'}`}
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              onSelectField(field.id);
+                                            }}
+                                          >
+                                            <div className="flex justify-between items-start mb-2">
+                                              <div className="flex items-center">
+                                                <div 
+                                                  {...provided.dragHandleProps} 
+                                                  className="cursor-grab p-1 mr-2"
+                                                >
+                                                  <Grip className="h-4 w-4 text-muted-foreground" />
+                                                </div>
+                                                <div>
+                                                  <div className="flex items-center">
+                                                    <label className="text-sm font-medium">
+                                                      {field.label}
+                                                      {field.required && <span className="text-destructive ml-1">*</span>}
+                                                    </label>
+                                                  </div>
+                                                  <span className="text-xs text-muted-foreground">
+                                                    {field.type}
+                                                  </span>
+                                                </div>
+                                              </div>
+                                              
+                                              <div className="flex items-center space-x-1">
+                                                <Button 
+                                                  variant="ghost" 
+                                                  size="sm"
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onSelectField(field.id);
+                                                    setActiveTab('field');
+                                                  }}
+                                                >
+                                                  <Settings className="h-4 w-4" />
+                                                </Button>
+                                                <Button 
+                                                  variant="ghost" 
+                                                  size="sm"
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onRemoveField(section.id, field.id);
+                                                  }}
+                                                >
+                                                  <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                              </div>
+                                            </div>
+                                            
+                                            <div className="mt-2">
+                                              {renderFieldPreview(field)}
+                                            </div>
+                                            
+                                            {field.helpText && (
+                                              <p className="text-xs text-muted-foreground mt-1">
+                                                {field.helpText}
+                                              </p>
+                                            )}
+                                          </div>
+                                        )}
+                                      </Draggable>
+                                    ))
+                                  )}
+                                  {provided.placeholder}
+                                </div>
+                              )}
+                            </Droppable>
+                          </div>
+                        </div>
+                      )}
+                    </Draggable>
+                  ))
+                )}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
         </TabsContent>
         
         <TabsContent value="field" className="overflow-y-auto p-4">

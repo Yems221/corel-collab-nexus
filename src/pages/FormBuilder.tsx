@@ -1,8 +1,6 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { DndProvider } from '@hello-pangea/dnd';
-import { HTML5Backend } from '@hello-pangea/dnd';
+import { DragDropContext } from '@hello-pangea/dnd';
 import { 
   FormBuilderHeader, 
   FormBuilderSidebar, 
@@ -59,9 +57,7 @@ const FormBuilder = () => {
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
 
   const handleSaveTemplate = () => {
-    // Save template to database logic would go here
     console.log('Saving template...', formTemplate);
-    // Mock saving
     setFormTemplate({
       ...formTemplate,
       updatedAt: new Date().toISOString(),
@@ -87,7 +83,7 @@ const FormBuilder = () => {
   const addField = (sectionId: string, fieldType: string) => {
     const newField: FormField = {
       id: `field-${Date.now()}`,
-      type: fieldType as any, // Cast as any for simplicity
+      type: fieldType as any,
       name: `field_${Date.now()}`,
       label: `Nouveau champ`,
       placeholder: 'Entrez une valeur',
@@ -181,7 +177,6 @@ const FormBuilder = () => {
     const [removed] = result.splice(startIndex, 1);
     result.splice(endIndex, 0, removed);
     
-    // Update the order property
     const updatedFields = result.map((field, index) => ({
       ...field,
       order: index
@@ -208,9 +203,25 @@ const FormBuilder = () => {
     });
   };
 
+  const handleDragEnd = (result: any) => {
+    const { source, destination, type } = result;
+    
+    if (!destination) {
+      return;
+    }
+    
+    if (source.droppableId !== destination.droppableId || source.index !== destination.index) {
+      if (type === 'section') {
+        reorderSections(source.index, destination.index);
+      } else if (type === 'field') {
+        reorderFields(source.droppableId, source.index, destination.index);
+      }
+    }
+  };
+
   return (
     <div className="container mx-auto p-4">
-      <DndProvider backend={HTML5Backend}>
+      <DragDropContext onDragEnd={handleDragEnd}>
         <FormBuilderHeader 
           formTemplate={formTemplate} 
           setFormTemplate={setFormTemplate}
@@ -256,7 +267,7 @@ const FormBuilder = () => {
             <FormPreview formTemplate={formTemplate} />
           </TabsContent>
         </Tabs>
-      </DndProvider>
+      </DragDropContext>
     </div>
   );
 };
