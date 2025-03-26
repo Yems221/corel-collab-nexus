@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { DragDropContext } from '@hello-pangea/dnd';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   FormBuilderHeader, 
   FormBuilderSidebar, 
@@ -14,9 +15,17 @@ import {
 } from "@/components/ui/resizable";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FormTemplate, FormField, FormSection } from '../types/form-builder';
+import { useToast } from '@/hooks/use-toast';
 
 const FormBuilder = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { toast } = useToast();
+  
+  const associationId = new URLSearchParams(location.search).get('associationId') || 
+                        (location.state as any)?.associationId;
+  
   const [formTemplate, setFormTemplate] = useState<FormTemplate>({
     id: `template-${Date.now()}`,
     name: 'Nouveau formulaire',
@@ -50,18 +59,41 @@ const FormBuilder = () => {
     createdBy: user?.id || 'unknown',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    community: associationId,
   });
 
   const [activeTab, setActiveTab] = useState<'editor' | 'preview'>('editor');
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(formTemplate.sections[0]?.id || null);
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
 
+  useEffect(() => {
+    const templateId = new URLSearchParams(location.search).get('templateId');
+    if (templateId) {
+      console.log('Loading template with ID:', templateId);
+      // Simulated API call response
+      // setFormTemplate(fetchedTemplate);
+    }
+  }, [location]);
+
   const handleSaveTemplate = () => {
     console.log('Saving template...', formTemplate);
-    setFormTemplate({
+    
+    const updatedTemplate = {
       ...formTemplate,
       updatedAt: new Date().toISOString(),
+    };
+    setFormTemplate(updatedTemplate);
+    
+    toast({
+      title: "Formulaire enregistré",
+      description: "Le formulaire a été enregistré avec succès.",
     });
+    
+    if (associationId) {
+      setTimeout(() => {
+        navigate(`/associations/${associationId}?tab=forms`);
+      }, 1500);
+    }
   };
 
   const addSection = () => {
@@ -226,6 +258,7 @@ const FormBuilder = () => {
           formTemplate={formTemplate} 
           setFormTemplate={setFormTemplate}
           onSave={handleSaveTemplate}
+          associationId={associationId}
         />
         
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'editor' | 'preview')}>

@@ -4,19 +4,22 @@ import { FormTemplate } from '../../types/form-builder';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Save, Copy, DownloadCloud, Upload } from 'lucide-react';
+import { Save, Copy, DownloadCloud, Upload, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Link } from 'react-router-dom';
 
 interface FormBuilderHeaderProps {
   formTemplate: FormTemplate;
   setFormTemplate: React.Dispatch<React.SetStateAction<FormTemplate>>;
   onSave: () => void;
+  associationId?: string | null;
 }
 
 const FormBuilderHeader: React.FC<FormBuilderHeaderProps> = ({ 
   formTemplate, 
   setFormTemplate, 
-  onSave 
+  onSave,
+  associationId
 }) => {
   const { toast } = useToast();
 
@@ -100,6 +103,17 @@ const FormBuilderHeader: React.FC<FormBuilderHeaderProps> = ({
 
   return (
     <div className="mb-6 space-y-4">
+      {associationId && (
+        <div className="mb-2">
+          <Link to={`/associations/${associationId}?tab=forms`}>
+            <Button variant="ghost" size="sm">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Retour à l'association
+            </Button>
+          </Link>
+        </div>
+      )}
+      
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex-1 space-y-2 w-full md:w-auto">
           <Input
@@ -114,6 +128,11 @@ const FormBuilderHeader: React.FC<FormBuilderHeaderProps> = ({
             placeholder="Description du formulaire (optionnel)"
             className="h-20 resize-none"
           />
+          {associationId && (
+            <div className="text-sm text-muted-foreground mt-1">
+              Ce formulaire sera associé à votre association
+            </div>
+          )}
         </div>
         
         <div className="flex flex-wrap gap-2">

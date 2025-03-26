@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Button from '@/components/ui-components/Button';
 import { 
@@ -10,7 +9,10 @@ import {
   Users,
   Calendar, 
   Clock,
-  SlidersHorizontal
+  SlidersHorizontal,
+  FileText,
+  FormInput,
+  Edit
 } from 'lucide-react';
 import AssociationCard from '@/components/AssociationCard';
 import {
@@ -96,6 +98,7 @@ const Associations = () => {
   const [selectedCategory, setSelectedCategory] = useState('Toutes les catégories');
   const [sortOption, setSortOption] = useState('newest');
   const [currentTab, setCurrentTab] = useState('all');
+  const navigate = useNavigate();
   
   // Filter and sort associations
   const filteredAssociations = mockAssociations
@@ -126,6 +129,11 @@ const Associations = () => {
         return b.eventsCount - a.eventsCount;
       }
     });
+  
+  // Add function to create a new form for an association
+  const handleCreateForm = (associationId: string) => {
+    navigate(`/form-builder?associationId=${associationId}`);
+  };
   
   return (
     <div className="min-h-screen bg-gray-50">
@@ -219,7 +227,28 @@ const Associations = () => {
         {/* Associations Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in" style={{ animationDelay: '0.4s' }}>
           {filteredAssociations.map(association => (
-            <AssociationCard key={association.id} {...association} />
+            <div key={association.id} className="relative">
+              <AssociationCard key={association.id} {...association} />
+              
+              {/* Add a form builder action button for association managers */}
+              {currentTab === 'my' && (
+                <div className="absolute top-2 right-2 z-10">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleCreateForm(association.id);
+                    }}
+                    className="bg-white hover:bg-gray-100"
+                  >
+                    <FormInput className="h-4 w-4 mr-1" />
+                    Formulaire d'inscription
+                  </Button>
+                </div>
+              )}
+            </div>
           ))}
           
           {/* Empty state */}
