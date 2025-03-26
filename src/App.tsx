@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import Associations from "./pages/Associations";
 import Events from "./pages/Events";
 import Projects from "./pages/Projects";
+import FormBuilder from "./pages/FormBuilder";
 import NotFound from "./pages/NotFound";
 import AuthForm from "./components/auth/AuthForm";
 
@@ -62,6 +63,11 @@ const App = () => (
             <Route path="/projects" element={
               <ProtectedRoute>
                 <Projects />
+              </ProtectedRoute>
+            } />
+            <Route path="/form-builder" element={
+              <ProtectedRoute>
+                <FormBuilder />
               </ProtectedRoute>
             } />
             
