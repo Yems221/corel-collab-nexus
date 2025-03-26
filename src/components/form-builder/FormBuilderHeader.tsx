@@ -1,12 +1,19 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { FormTemplate } from '../../types/form-builder';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Save, Copy, DownloadCloud, Upload, ArrowLeft } from 'lucide-react';
+import { Save, Copy, DownloadCloud, Upload, ArrowLeft, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface FormBuilderHeaderProps {
   formTemplate: FormTemplate;
@@ -22,6 +29,13 @@ const FormBuilderHeader: React.FC<FormBuilderHeaderProps> = ({
   associationId
 }) => {
   const { toast } = useToast();
+  const [isTemplatesDialogOpen, setIsTemplatesDialogOpen] = useState(false);
+
+  const mockTemplates = [
+    { id: 'template-1', name: 'Formulaire d\'inscription', description: 'Pour l\'inscription des nouveaux membres' },
+    { id: 'template-2', name: 'Formulaire de contact', description: 'Pour contacter l\'association' },
+    { id: 'template-3', name: 'Formulaire d\'événement', description: 'Pour s\'inscrire à un événement' },
+  ];
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormTemplate({
@@ -46,8 +60,6 @@ const FormBuilderHeader: React.FC<FormBuilderHeaderProps> = ({
       updatedAt: new Date().toISOString(),
     };
     
-    // Here you would typically save this to your database
-    // For now we'll just show a toast
     toast({
       title: "Formulaire dupliqué",
       description: "Une copie du formulaire a été créée."
@@ -101,6 +113,25 @@ const FormBuilderHeader: React.FC<FormBuilderHeaderProps> = ({
     input.click();
   };
 
+  const handleSelectTemplate = (templateId: string) => {
+    const selectedTemplate = mockTemplates.find(t => t.id === templateId);
+    
+    if (selectedTemplate) {
+      setFormTemplate({
+        ...formTemplate,
+        name: selectedTemplate.name,
+        description: selectedTemplate.description || '',
+      });
+      
+      toast({
+        title: "Template sélectionné",
+        description: `Le template "${selectedTemplate.name}" a été chargé.`
+      });
+      
+      setIsTemplatesDialogOpen(false);
+    }
+  };
+
   return (
     <div className="mb-6 space-y-4">
       {associationId && (
@@ -140,6 +171,38 @@ const FormBuilderHeader: React.FC<FormBuilderHeaderProps> = ({
             <Save className="mr-2 h-4 w-4" />
             Enregistrer
           </Button>
+          
+          <Dialog open={isTemplatesDialogOpen} onOpenChange={setIsTemplatesDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                <FileText className="mr-2 h-4 w-4" />
+                Templates
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Templates de formulaire</DialogTitle>
+                <DialogDescription>
+                  Sélectionnez un template pour commencer votre formulaire
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                {mockTemplates.map((template) => (
+                  <div 
+                    key={template.id}
+                    className="p-4 border rounded-md hover:bg-accent cursor-pointer transition-colors"
+                    onClick={() => handleSelectTemplate(template.id)}
+                  >
+                    <h3 className="font-medium">{template.name}</h3>
+                    {template.description && (
+                      <p className="text-sm text-muted-foreground">{template.description}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </DialogContent>
+          </Dialog>
+          
           <Button onClick={handleDuplicate} variant="outline">
             <Copy className="mr-2 h-4 w-4" />
             Dupliquer

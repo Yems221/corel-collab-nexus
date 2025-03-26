@@ -236,11 +236,7 @@ const Associations = () => {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleCreateForm(association.id);
-                    }}
+                    onClick={() => navigate(`/form-builder?associationId=${association.id}`)}
                     className="bg-white hover:bg-gray-100"
                   >
                     <FormInput className="h-4 w-4 mr-1" />
