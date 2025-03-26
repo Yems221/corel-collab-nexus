@@ -13,7 +13,18 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface FormBuilderHeaderProps {
   formTemplate: FormTemplate;
@@ -30,6 +41,10 @@ const FormBuilderHeader: React.FC<FormBuilderHeaderProps> = ({
 }) => {
   const { toast } = useToast();
   const [isTemplatesDialogOpen, setIsTemplatesDialogOpen] = useState(false);
+  const [isSaveAsTemplateOpen, setSaveAsTemplateOpen] = useState(false);
+  const [templateName, setTemplateName] = useState(formTemplate.name);
+  const [templateDescription, setTemplateDescription] = useState(formTemplate.description || '');
+  const [savedTemplateSuccess, setSavedTemplateSuccess] = useState(false);
 
   const mockTemplates = [
     { id: 'template-1', name: 'Formulaire d\'inscription', description: 'Pour l\'inscription des nouveaux membres' },
@@ -132,6 +147,23 @@ const FormBuilderHeader: React.FC<FormBuilderHeaderProps> = ({
     }
   };
 
+  const handleSaveAsTemplate = () => {
+    const templateForm = {
+      ...formTemplate,
+      id: `template-${Date.now()}`,
+      name: templateName,
+      description: templateDescription,
+      isTemplate: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    
+    console.log("Saving as template:", templateForm);
+    
+    setSavedTemplateSuccess(true);
+    setSaveAsTemplateOpen(false);
+  };
+
   return (
     <div className="mb-6 space-y-4">
       {associationId && (
@@ -202,6 +234,72 @@ const FormBuilderHeader: React.FC<FormBuilderHeaderProps> = ({
               </div>
             </DialogContent>
           </Dialog>
+          
+          <Dialog open={isSaveAsTemplateOpen} onOpenChange={setSaveAsTemplateOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                <FileText className="mr-2 h-4 w-4" />
+                Sauvegarder comme template
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Sauvegarder comme template</DialogTitle>
+                <DialogDescription>
+                  Ce formulaire sera disponible comme template pour tous les utilisateurs.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <label htmlFor="template-name" className="text-sm font-medium">
+                    Nom du template
+                  </label>
+                  <Input
+                    id="template-name"
+                    value={templateName}
+                    onChange={(e) => setTemplateName(e.target.value)}
+                    placeholder="Nom du template"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="template-desc" className="text-sm font-medium">
+                    Description
+                  </label>
+                  <Textarea
+                    id="template-desc"
+                    value={templateDescription}
+                    onChange={(e) => setTemplateDescription(e.target.value)}
+                    placeholder="Description du template"
+                    className="h-20 resize-none"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setSaveAsTemplateOpen(false)}>
+                  Annuler
+                </Button>
+                <Button onClick={handleSaveAsTemplate}>
+                  Sauvegarder
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          
+          <AlertDialog open={savedTemplateSuccess} onOpenChange={setSavedTemplateSuccess}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Template créé avec succès</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Votre formulaire a été sauvegardé comme template et sera disponible pour tous les utilisateurs.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogAction onClick={() => setSavedTemplateSuccess(false)}>
+                  OK
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           
           <Button onClick={handleDuplicate} variant="outline">
             <Copy className="mr-2 h-4 w-4" />
