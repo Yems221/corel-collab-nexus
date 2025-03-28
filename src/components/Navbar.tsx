@@ -8,8 +8,6 @@ import {
   Users, 
   Calendar, 
   Briefcase, 
-  Bell, 
-  MessageCircle,
   Menu,
   X,
   LogOut
@@ -23,11 +21,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import NotificationCenter from './NotificationCenter';
+import { useNotifications } from '@/context/NotificationContext';
 
 const Navbar: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { notifications, markAllAsRead, markAsRead, deleteNotification } = useNotifications();
   
   const navigationItems = [
     { name: 'Tableau de bord', path: '/dashboard', icon: Home },
@@ -80,15 +81,12 @@ const Navbar: React.FC = () => {
           {isAuthenticated ? (
             <>
               {/* Notification Bell */}
-              <button className="p-2 rounded-full hover:bg-gray-100 relative">
-                <Bell size={20} />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
-              </button>
-              
-              {/* Messages */}
-              <button className="p-2 rounded-full hover:bg-gray-100">
-                <MessageCircle size={20} />
-              </button>
+              <NotificationCenter 
+                notifications={notifications}
+                onMarkAllRead={markAllAsRead}
+                onMarkAsRead={markAsRead}
+                onDeleteNotification={deleteNotification}
+              />
               
               {/* User Avatar */}
               <DropdownMenu>
