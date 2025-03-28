@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -29,10 +28,10 @@ import {
   MessageSquare,
   FileEdit,
   FormInput,
+  BadgeEuro,
 } from 'lucide-react';
 import { useNotifications } from '@/context/NotificationContext';
 
-// Mock data
 const mockAssociation = {
   id: '1',
   name: 'Association des Riverains du Quartier Saint-Michel',
@@ -78,8 +77,6 @@ const AssociationDetail = () => {
   const [activeTab, setActiveTab] = useState('about');
   const { addNotification } = useNotifications();
   
-  // In a real application, you would fetch the association data based on the ID
-  // For now, we'll use the mock data
   const association = mockAssociation;
   
   const handleSendMessage = () => {
@@ -96,7 +93,6 @@ const AssociationDetail = () => {
       <Navbar />
       
       <main className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header with association image and basic info */}
         <div className="mb-8 relative rounded-xl overflow-hidden">
           <div className="h-64 w-full object-cover" style={{
             backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.7)), url(${association.imageUrl})`,
@@ -125,6 +121,12 @@ const AssociationDetail = () => {
           </div>
           
           <div className="absolute top-4 right-4 flex gap-2">
+            <Link to={`/financial-dashboard/association/${association.id}`}>
+              <Button variant="outline" className="bg-white hover:bg-gray-100">
+                <BadgeEuro className="h-4 w-4 mr-2" />
+                Finances
+              </Button>
+            </Link>
             <Button variant="outline" className="bg-white hover:bg-gray-100">
               <MessageSquare className="h-4 w-4 mr-2" />
               Contacter
@@ -142,7 +144,6 @@ const AssociationDetail = () => {
           </div>
         </div>
         
-        {/* Tabs for different sections */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="w-full justify-start border-b pb-px">
             <TabsTrigger value="about" className="rounded-none px-6 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none">
@@ -159,7 +160,6 @@ const AssociationDetail = () => {
             </TabsTrigger>
           </TabsList>
           
-          {/* About tab */}
           <TabsContent value="about">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="md:col-span-2 space-y-6">
@@ -250,7 +250,6 @@ const AssociationDetail = () => {
             </div>
           </TabsContent>
           
-          {/* Members tab */}
           <TabsContent value="members">
             <div className="mb-4 flex justify-between items-center">
               <h2 className="text-xl font-bold">Membres ({mockMembers.length})</h2>
@@ -286,7 +285,6 @@ const AssociationDetail = () => {
             </div>
           </TabsContent>
           
-          {/* Events tab */}
           <TabsContent value="events">
             <div className="mb-4 flex justify-between items-center">
               <h2 className="text-xl font-bold">Événements ({mockEvents.length})</h2>
@@ -330,7 +328,6 @@ const AssociationDetail = () => {
             </div>
           </TabsContent>
           
-          {/* Projects tab */}
           <TabsContent value="projects">
             <div className="mb-4 flex justify-between items-center">
               <h2 className="text-xl font-bold">Projets ({mockProjects.length})</h2>

@@ -18,6 +18,7 @@ import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
 import CreateProject from "./pages/CreateProject";
 import FormBuilder from "./pages/FormBuilder";
+import FinancialDashboard from "./pages/FinancialDashboard";
 import NotFound from "./pages/NotFound";
 import AuthForm from "./components/auth/AuthForm";
 
@@ -73,6 +74,13 @@ const App = () => (
               <Route path="/create-association" element={
                 <ProtectedRoute>
                   <CreateAssociation />
+                </ProtectedRoute>
+              } />
+              
+              {/* Financial dashboard */}
+              <Route path="/financial-dashboard/:type/:id" element={
+                <ProtectedRoute>
+                  <FinancialDashboard />
                 </ProtectedRoute>
               } />
               

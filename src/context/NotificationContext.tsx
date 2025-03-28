@@ -75,6 +75,26 @@ const generateMockNotifications = (): Notification[] => {
       category: 'events',
       link: '/events/6',
     },
+    {
+      id: '6',
+      title: 'Nouveau don reçu',
+      message: 'Un don de 250€ a été reçu pour l\'Association des Riverains',
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 12), // 12 hours ago
+      read: false,
+      type: 'success',
+      category: 'financial',
+      link: '/financial-dashboard/association/1',
+    },
+    {
+      id: '7',
+      title: 'Objectif de collecte atteint',
+      message: 'La campagne "Rénovation du parc" a atteint son objectif de 5000€',
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
+      read: true,
+      type: 'success',
+      category: 'financial',
+      link: '/financial-dashboard/project/1',
+    },
   ];
 };
 
