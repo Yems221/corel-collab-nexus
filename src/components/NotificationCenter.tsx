@@ -9,7 +9,8 @@ import {
   MessageSquare,
   CheckCircle2,
   AlertCircle,
-  Info
+  Info,
+  BadgeEuro
 } from 'lucide-react';
 import {
   Popover,
@@ -22,7 +23,7 @@ import { useToast } from '@/hooks/use-toast';
 
 // Define notification types
 export type NotificationType = 'info' | 'success' | 'warning' | 'error';
-export type NotificationCategory = 'all' | 'associations' | 'events' | 'projects' | 'messages';
+export type NotificationCategory = 'all' | 'associations' | 'events' | 'projects' | 'messages' | 'financial';
 
 export interface Notification {
   id: string;
@@ -68,6 +69,8 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
         return <FileText className="h-4 w-4" />;
       case 'messages':
         return <MessageSquare className="h-4 w-4" />;
+      case 'financial':
+        return <BadgeEuro className="h-4 w-4" />;
     }
   };
   
@@ -137,12 +140,13 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
         </div>
         
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as NotificationCategory)} className="w-full">
-          <TabsList className="w-full grid grid-cols-5">
+          <TabsList className="w-full grid grid-cols-6">
             <TabsTrigger value="all">Tous</TabsTrigger>
             <TabsTrigger value="associations">Assos</TabsTrigger>
             <TabsTrigger value="events">Événements</TabsTrigger>
             <TabsTrigger value="projects">Projets</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
+            <TabsTrigger value="financial">Finance</TabsTrigger>
           </TabsList>
           
           <TabsContent value={activeTab} className="max-h-[350px] overflow-y-auto">
@@ -195,7 +199,8 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
                             <span className="ml-1">
                               {notification.category === 'associations' ? 'Association' : 
                                notification.category === 'events' ? 'Événement' : 
-                               notification.category === 'projects' ? 'Projet' : 'Message'}
+                               notification.category === 'projects' ? 'Projet' : 
+                               notification.category === 'financial' ? 'Finance' : 'Message'}
                             </span>
                           </span>
                         </div>
