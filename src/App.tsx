@@ -19,6 +19,7 @@ import ProjectDetail from "./pages/ProjectDetail";
 import CreateProject from "./pages/CreateProject";
 import FormBuilder from "./pages/FormBuilder";
 import FinancialDashboard from "./pages/FinancialDashboard";
+import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import NotFound from "./pages/NotFound";
 import AuthForm from "./components/auth/AuthForm";
 
@@ -34,6 +35,25 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
+  }
+  
+  return <>{children}</>;
+};
+
+// SuperAdmin route wrapper
+const SuperAdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated, isSuperAdmin, loading } = useAuth();
+  
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">Chargement...</div>;
+  }
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+  
+  if (!isSuperAdmin) {
+    return <Navigate to="/dashboard" />;
   }
   
   return <>{children}</>;
@@ -123,6 +143,13 @@ const App = () => (
                 <ProtectedRoute>
                   <FormBuilder />
                 </ProtectedRoute>
+              } />
+              
+              {/* SuperAdmin routes */}
+              <Route path="/admin" element={
+                <SuperAdminRoute>
+                  <SuperAdminDashboard />
+                </SuperAdminRoute>
               } />
               
               {/* Catch-all route */}

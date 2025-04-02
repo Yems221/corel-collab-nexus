@@ -2,11 +2,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // Types
+type UserRole = 'user' | 'admin' | 'superadmin';
+
 type User = {
   id: string;
   name: string;
   email: string;
   avatar?: string;
+  role: UserRole;
 };
 
 type AuthContextType = {
@@ -16,6 +19,7 @@ type AuthContextType = {
   signup: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
+  isSuperAdmin: boolean;
 };
 
 // Mock data for demonstration
@@ -23,7 +27,17 @@ const MOCK_USER: User = {
   id: '1',
   name: 'John Doe',
   email: 'john@example.com',
-  avatar: 'https://ui-avatars.com/api/?name=John+Doe&background=0D8ABC&color=fff'
+  avatar: 'https://ui-avatars.com/api/?name=John+Doe&background=0D8ABC&color=fff',
+  role: 'user'
+};
+
+// Mock superadmin for testing
+const MOCK_SUPERADMIN: User = {
+  id: '2',
+  name: 'Admin User',
+  email: 'admin@example.com',
+  avatar: 'https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff',
+  role: 'superadmin'
 };
 
 // Create context
@@ -48,9 +62,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // For demo purposes, accept any credentials
-    setUser(MOCK_USER);
-    localStorage.setItem('corel_user', JSON.stringify(MOCK_USER));
+    // For demo purposes, provide superadmin access for specific credentials
+    if (email === 'admin@example.com' && password === 'admin123') {
+      setUser(MOCK_SUPERADMIN);
+      localStorage.setItem('corel_user', JSON.stringify(MOCK_SUPERADMIN));
+    } else {
+      // Regular user login
+      setUser(MOCK_USER);
+      localStorage.setItem('corel_user', JSON.stringify(MOCK_USER));
+    }
+    
     setLoading(false);
   };
 
@@ -64,7 +85,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       ...MOCK_USER,
       name,
       email,
-      avatar: `https://ui-avatars.com/api/?name=${name.replace(' ', '+')}&background=0D8ABC&color=fff`
+      avatar: `https://ui-avatars.com/api/?name=${name.replace(' ', '+')}&background=0D8ABC&color=fff`,
+      role: 'user' as UserRole
     };
     
     setUser(newUser);
@@ -83,7 +105,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login,
     signup,
     logout,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
+    isSuperAdmin: user?.role === 'superadmin'
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
