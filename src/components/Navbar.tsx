@@ -10,7 +10,8 @@ import {
   Briefcase, 
   Menu,
   X,
-  LogOut
+  LogOut,
+  Shield
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -25,7 +26,7 @@ import NotificationCenter from './NotificationCenter';
 import { useNotifications } from '@/context/NotificationContext';
 
 const Navbar: React.FC = () => {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, isSuperAdmin } = useAuth();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { notifications, markAllAsRead, markAsRead, deleteNotification } = useNotifications();
@@ -111,6 +112,17 @@ const Navbar: React.FC = () => {
                       Paramètres
                     </Link>
                   </DropdownMenuItem>
+                  {isSuperAdmin && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>
+                        <Link to="/admin" className="w-full flex items-center">
+                          <Shield className="mr-2 h-4 w-4" />
+                          <span>Administration</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logout} className="text-red-500">
                     <LogOut className="mr-2 h-4 w-4" />
@@ -165,6 +177,22 @@ const Navbar: React.FC = () => {
                 </div>
               </Link>
             ))}
+            {isSuperAdmin && (
+              <Link
+                to="/admin"
+                className={`block px-4 py-2 rounded-md ${
+                  isActive('/admin')
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <div className="flex items-center space-x-3">
+                  <Shield size={18} />
+                  <span>Administration</span>
+                </div>
+              </Link>
+            )}
           </div>
         </div>
       )}
