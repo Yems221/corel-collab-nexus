@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +8,7 @@ import {
   Calendar,
   Wallet,
   Bell,
-  Buildings,
+  Building2,
   LogOut,
   LineChart,
   PieChart,
@@ -17,7 +16,9 @@ import {
   BadgeAlert,
   UserCheck,
   BadgeCheck,
-  CircleAlert
+  CircleAlert,
+  BanknoteIcon,
+  XCircle
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -29,7 +30,6 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import NotificationCenter from '@/components/NotificationCenter';
 
-// Mock data for the dashboard
 const statsData = {
   totalUsers: 2347,
   activeUsers: 1892,
@@ -84,7 +84,6 @@ const recentNotifications = [
   { id: '5', title: 'Nouvel utilisateur', message: '5 nouveaux utilisateurs ont rejoint la plateforme', timestamp: new Date('2023-06-26T11:20:00'), type: 'info', category: 'messages' }
 ];
 
-// Mock notifications for the NotificationCenter
 const mockNotifications = recentNotifications.map(notif => ({
   id: notif.id,
   title: notif.title,
@@ -95,7 +94,6 @@ const mockNotifications = recentNotifications.map(notif => ({
   category: notif.category as 'associations' | 'events' | 'projects' | 'messages' | 'financial',
 }));
 
-// Main SuperAdmin Dashboard Component
 const SuperAdminDashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -135,7 +133,6 @@ const SuperAdminDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Admin Header */}
       <header className="bg-primary text-primary-foreground py-4 px-6 shadow-md">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-2">
@@ -171,7 +168,6 @@ const SuperAdminDashboard: React.FC = () => {
         </div>
       </header>
 
-      {/* Main Dashboard */}
       <main className="container mx-auto py-6 px-4">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="mb-6 w-full md:w-auto grid grid-cols-3 md:grid-cols-6">
@@ -183,7 +179,6 @@ const SuperAdminDashboard: React.FC = () => {
             <TabsTrigger value="notifications">Notifications</TabsTrigger>
           </TabsList>
 
-          {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Card>
@@ -283,7 +278,7 @@ const SuperAdminDashboard: React.FC = () => {
                       <span className="text-xs text-muted-foreground ml-auto">Il y a 5h</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <BadgeEuro className="h-4 w-4 text-green-500" />
+                      <BanknoteIcon className="h-4 w-4 text-green-500" />
                       <span className="text-sm">Création d'un nouvel événement de collecte</span>
                       <span className="text-xs text-muted-foreground ml-auto">Il y a 8h</span>
                     </div>
@@ -349,7 +344,6 @@ const SuperAdminDashboard: React.FC = () => {
             </div>
           </TabsContent>
 
-          {/* Users Tab */}
           <TabsContent value="users">
             <Card>
               <CardHeader>
@@ -429,7 +423,6 @@ const SuperAdminDashboard: React.FC = () => {
               </CardFooter>
             </Card>
 
-            {/* User Management Dialog */}
             <Dialog open={showUserDialog} onOpenChange={setShowUserDialog}>
               <DialogContent>
                 <DialogHeader>
@@ -492,7 +485,6 @@ const SuperAdminDashboard: React.FC = () => {
             </Dialog>
           </TabsContent>
 
-          {/* Associations Tab */}
           <TabsContent value="associations">
             <Card>
               <CardHeader>
@@ -503,7 +495,7 @@ const SuperAdminDashboard: React.FC = () => {
                   </div>
                   <div className="flex space-x-2">
                     <Button size="sm" variant="outline">
-                      <Buildings className="mr-2 h-4 w-4" />
+                      <Building2 className="mr-2 h-4 w-4" />
                       Sous-groupes
                     </Button>
                     <Button size="sm">
@@ -571,7 +563,6 @@ const SuperAdminDashboard: React.FC = () => {
               </CardFooter>
             </Card>
 
-            {/* Association Management Dialog */}
             <Dialog open={showAssociationDialog} onOpenChange={setShowAssociationDialog}>
               <DialogContent className="max-w-xl">
                 <DialogHeader>
@@ -613,7 +604,7 @@ const SuperAdminDashboard: React.FC = () => {
                         </Button>
                         <Button 
                           variant="outline" 
-                          onClick={() => handleActionClick('Gestion des membres', selectedItem)}
+                          onClick={() => handleActionClick('Gérer les membres', selectedItem)}
                         >
                           Gérer les membres
                         </Button>
@@ -650,7 +641,6 @@ const SuperAdminDashboard: React.FC = () => {
             </Dialog>
           </TabsContent>
 
-          {/* Events Tab */}
           <TabsContent value="events">
             <Card>
               <CardHeader>
@@ -721,7 +711,6 @@ const SuperAdminDashboard: React.FC = () => {
               </CardFooter>
             </Card>
 
-            {/* Event Management Dialog */}
             <Dialog open={showEventDialog} onOpenChange={setShowEventDialog}>
               <DialogContent>
                 <DialogHeader>
@@ -792,7 +781,6 @@ const SuperAdminDashboard: React.FC = () => {
             </Dialog>
           </TabsContent>
 
-          {/* Financial Tab */}
           <TabsContent value="financial">
             <Card>
               <CardHeader>
@@ -876,7 +864,6 @@ const SuperAdminDashboard: React.FC = () => {
               </CardFooter>
             </Card>
 
-            {/* Transaction Management Dialog */}
             <Dialog open={showTransactionDialog} onOpenChange={setShowTransactionDialog}>
               <DialogContent>
                 <DialogHeader>
@@ -963,7 +950,6 @@ const SuperAdminDashboard: React.FC = () => {
             </Dialog>
           </TabsContent>
 
-          {/* Notifications Tab */}
           <TabsContent value="notifications">
             <Card>
               <CardHeader>
@@ -1030,7 +1016,7 @@ const SuperAdminDashboard: React.FC = () => {
                               onClick={() => handleActionClick('Suppression', notification)}
                             >
                               <span className="sr-only">Supprimer</span>
-                              <X className="h-4 w-4" />
+                              <XCircle className="h-4 w-4" />
                             </Button>
                           </div>
                         </TableCell>
